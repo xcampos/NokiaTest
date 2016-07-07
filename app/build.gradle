@@ -1,0 +1,40 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        nokiatest {
+            keyAlias 'nokia_test'
+            keyPassword 'nokiatest'
+            storeFile file('D:/KeyStoreBackup/Nokia/nokiatest.jks')
+            storePassword 'nokiatest'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion "24.0.0"
+    defaultConfig {
+        applicationId "com.nokiatest"
+        minSdkVersion 11
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.nokiatest
+        }
+        debug {
+            signingConfig signingConfigs.nokiatest
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.android.support:design:23.4.0'
+}

@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">NokiaTest</string>
+    <string name="title_main_activity">List of Apps</string>
+    <string name="txt_url_config">Url: http://www.ediamtesting.com/nokia/config.xml</string>
+    <string name="txt_url_mobi_config">Url: http://www.ediamsistemas.mobi/nokia/config.xml</string>
+    <string name="forced_acs">Forced ACS:</string>
+    <string name="txt_number_of_apps">"# of apps at config.xml: %s"</string>
+    <string name="menu_reset">Reset</string>
+
+    <string name="title_activity_splash_screen">Splash</string>
+    <string name="loading">Loading...</string>
+    <string name="no_internet">No Internet!</string>
+
+    <string name="txt_file_name">"File: %s"</string>
+    <string name="txt_progress">"Progress: %s"</string>
+    <string name="txt_time">Time:</string>
+    <string name="txt_ttfb">TTFB:</string>
+    <string name="txt_md5">MD5:</string>
+
+    <string name="menu_sync">"Sync!    "</string>
+    <string name="menu_done">"Done    "</string>
+    <string name="app_settings">Settings</string>
+    <string name="permission_storage_are_needed">Please grant Storage Permission</string>
+    <string name="menu_settings">Settings</string>
+    <string name="hint_url">http://www.ediamtesting.com/nokia</string>
+    <string name="main_url">http://www.ediamtesting.com/nokia/</string>
+    <string name="txt_start">Start</string>
+    <string name="no_url">Please enter url</string>
+</resources>
