@@ -102,6 +102,7 @@ public class ContentActivity extends AppCompatActivity {
         checkECAServer();
 
 
+
     }
 
     private void checkECAServer() {
@@ -283,6 +284,8 @@ public class ContentActivity extends AppCompatActivity {
     int lenghtOfFile = 0;
     float TTFB = 0, timeForDownload = 0;
 
+
+
     class ListContentAdapter extends BaseAdapter {
 
         private LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -401,7 +404,7 @@ public class ContentActivity extends AppCompatActivity {
                             }
                         }
                         saveFolder = new File(Environment.getExternalStorageDirectory(), "nokiatest");
-                        System.out.print(saveFolder.getPath().toString());
+                        System.out.print("%%^%^" + saveFolder.getPath().toString());
 
 
                         if (!saveFolder.exists()) {
@@ -411,13 +414,9 @@ public class ContentActivity extends AppCompatActivity {
 
                         outputFile = new File(saveFolder, params[0].substring(params[0].lastIndexOf("/")));
                         InputStream input = new BufferedInputStream(url.openStream());
-
                         OutputStream output = new FileOutputStream(outputFile);
-
                         byte data[] = new byte[1024];
-
                         long total = 0;
-
 
                         while ((count = input.read(data)) != -1) {
                             total += count;
@@ -454,7 +453,7 @@ public class ContentActivity extends AppCompatActivity {
 
 
                 if (progress.length == 2) {
-                    vh.tvTTFB.setText(progress[1] +" s");
+                    vh.tvTTFB.setText(progress[1] + " s");
                 } else {
                     String text = "Received: " + progress[1] + " bytes " + "(Downloaded: " + progress[2] + " bytes) Expected: " + progress[3] + " bytes.";
                     vh.tvProgress.setText(String.format(getResources().getString(R.string.txt_progress), text));
@@ -466,6 +465,7 @@ public class ContentActivity extends AppCompatActivity {
                 super.onPostExecute(b);
                 if (b) {
                     vh.tvTimer.setText(timeForDownload + " s");
+                    vh.tvMD5.setText(util.generateMD5(outputFile));
                     if (!appData.getApplicationType().equalsIgnoreCase("demo")) {
                         Intent i = new Intent(ContentActivity.this, ContentDetailsActivity.class);
                         startActivity(i);
@@ -475,5 +475,9 @@ public class ContentActivity extends AppCompatActivity {
                 }
             }
         }
+
+
     }
+
+
 }
