@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -33,10 +34,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.nokiatest.R;
 import com.nokiatest.controller.AppController;
 import com.nokiatest.model.DownloadInfo;
@@ -95,11 +99,31 @@ public class ContentActivity extends AppCompatActivity {
         acsURL = getIntent().getStringExtra(Constant.ACS_URL);
         title = getIntent().getStringExtra(Constant.APP_NAME);
         ab = getSupportActionBar();
-        getContentData();
+        checkECAServer();
+
 
     }
 
-    private void getContentData() {
+    private void checkECAServer() {
+        RequestQueue rq = Volley.newRequestQueue(this);
+        ImageRequest ir = new ImageRequest(
+                Constant.CHECK_ECA_URL, new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap response) {
+                ab.setTitle("ECA: YES");
+                getContentDataFromECA(true);
+            }
+        }, 0, 0, null, null, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                ab.setTitle("ECA: NO");
+                getContentDataFromECA(false);
+            }
+        });
+        rq.add(ir);
+    }
+
+    private void getContentDataFromECA(final boolean isEcaAvailable) {
         pDialog = util.getProgressDialog(ContentActivity.this);
         if (!pDialog.isShowing()) {
             pDialog.show();
@@ -109,7 +133,7 @@ public class ContentActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(String response) {
-                parseXMLData(response.toString());
+                parseXMLData(response.toString(), isEcaAvailable);
                 util.hideProgressDialog(pDialog);
 
             }
@@ -127,24 +151,27 @@ public class ContentActivity extends AppCompatActivity {
         AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
     }
 
-    private void parseXMLData(String response) {
+    private void parseXMLData(String response, boolean isEcaAvailable) {
 
 
         XmlParser parser = new XmlParser();
         Document doc = parser.getDomElement(response);
         appData = new UeAppData();
         // Extract edge_cloud_server_ip
-        appData.setIpECA(parser.getElementValue(doc.getElementsByTagName(NODE_ECA_IP).item(0)));
-        // Extract acs_cloud_server_ip
-        appData.setIpCDN(parser.getElementValue(doc.getElementsByTagName(NODE_ECA_IP).item(0)));
+        if (isEcaAvailable) {
+            appData.setIpECA(parser.getElementValue(doc.getElementsByTagName(NODE_ECA_IP).item(0)));
+        } else {
+            // Extract acs_cloud_server_ip
+            appData.setIpCDN(parser.getElementValue(doc.getElementsByTagName(NODE_CDN_IP).item(0)));
+        }
         //Extract nodeAppType
         appData.setApplicationType(parser.getElementValue(doc.getElementsByTagName(NODE_APP_TYPE).item(0)));
 
         //Extract content files
         NodeList nodeList = doc.getElementsByTagName(NODE_CONTENT_FILE);
         listContentFile = new ArrayList<>();
-        String activeUrl = util.isString(appData.getIpECA()) ?  "http://"+appData.getIpECA()+"/"+title +"/" :  "http://"+appData.getIpCDN()+"/"+title +"/";
-        ab.setTitle("ECA: " + (util.isString(appData.getIpECA()) ? "yes" : "no"));
+        String activeUrl = util.isString(appData.getIpECA()) ? "http://" + appData.getIpECA() + "/" + title + "/" : "http://" + appData.getIpCDN() + "/" + title + "/";
+
         for (int i = 0; i < nodeList.getLength(); i++) {
             Element e = (Element) nodeList.item(i);
             UeAppData.ListContentFile contentFileItem = appData.new ListContentFile();
@@ -292,8 +319,8 @@ public class ContentActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                        finalViewHolder.rowSync.setBackgroundResource(R.color.row_selected_grey);
-                        startSync(finalViewHolder, position);
+                    finalViewHolder.rowSync.setBackgroundResource(R.color.row_selected_grey);
+                    startSync(finalViewHolder, position);
 
                 }
             });
@@ -427,10 +454,10 @@ public class ContentActivity extends AppCompatActivity {
 
 
                 if (progress.length == 2) {
-                    vh.tvTTFB.setText(progress[1]);
+                    vh.tvTTFB.setText(progress[1] +" s");
                 } else {
                     String text = "Received: " + progress[1] + " bytes " + "(Downloaded: " + progress[2] + " bytes) Expected: " + progress[3] + " bytes.";
-                    vh.tvProgress.setText(String.format(getResources().getString(R.string.txt_file_name), text));
+                    vh.tvProgress.setText(String.format(getResources().getString(R.string.txt_progress), text));
                 }
             }
 
@@ -438,8 +465,8 @@ public class ContentActivity extends AppCompatActivity {
             protected void onPostExecute(Boolean b) {
                 super.onPostExecute(b);
                 if (b) {
-                    vh.tvTimer.setText(timeForDownload + "");
-                    if(!appData.getApplicationType().equalsIgnoreCase("demo")) {
+                    vh.tvTimer.setText(timeForDownload + " s");
+                    if (!appData.getApplicationType().equalsIgnoreCase("demo")) {
                         Intent i = new Intent(ContentActivity.this, ContentDetailsActivity.class);
                         startActivity(i);
                     }

@@ -7,6 +7,7 @@ public class Constant {
 
     public static String MAIN_URL = "http://www.ediamtesting.com/nokia";
     public static String CONFIG_URL = MAIN_URL +"/config.xml";
+    public static String CHECK_ECA_URL = MAIN_URL + "/is_eca_live.jpg";
     public static String MOBI_CONFIG_URL = "http://www.ediamsistemas.mobi/nokia/config.xml";
     public static String ACS_URL = "acs_url";
     public static String APP_NAME = "app_name";
