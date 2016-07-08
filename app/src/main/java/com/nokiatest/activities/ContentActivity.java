@@ -425,7 +425,7 @@ public class ContentActivity extends AppCompatActivity {
 
                         afterDownload = (lenghtOfFile > 0) ? Calendar.getInstance() : null;
                         if (afterDownload != null) {
-                            timeForDownload = afterTtfb.getTimeInMillis() - before.getTimeInMillis();
+                            timeForDownload = (afterDownload.getTimeInMillis() - before.getTimeInMillis()) / 1000.0f;
                             throughput = lenghtOfFile / (afterDownload.getTimeInMillis() -beforeDownload.getTimeInMillis());
 
                         }
