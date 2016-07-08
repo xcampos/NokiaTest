@@ -102,7 +102,6 @@ public class ContentActivity extends AppCompatActivity {
         checkECAServer();
 
 
-
     }
 
     private void checkECAServer() {
@@ -282,8 +281,7 @@ public class ContentActivity extends AppCompatActivity {
 
     private DownloadInfo info;
     int lenghtOfFile = 0;
-    float TTFB = 0, timeForDownload = 0;
-
+    float TTFB = 0, timeForDownload = 0, throughput = 0;
 
 
     class ListContentAdapter extends BaseAdapter {
@@ -352,13 +350,14 @@ public class ContentActivity extends AppCompatActivity {
 
         class ViewHolder {
 
-            TextView tvFileName, tvTimer, tvTTFB, tvMD5, tvProgress;
+            TextView tvFileName, tvTimer, tvTTFB, tvMD5, tvProgress, tvThroughput;
             ProgressBar progressBar;
             LinearLayout rowSync;
 
             public ViewHolder(View vi) {
                 tvFileName = (TextView) vi.findViewById(R.id.tv_file_name);
                 tvTimer = (TextView) vi.findViewById(R.id.tv_timer);
+                tvThroughput = (TextView) vi.findViewById(R.id.tv_throughput);
                 tvTTFB = (TextView) vi.findViewById(R.id.tv_ttfb);
                 tvMD5 = (TextView) vi.findViewById(R.id.tv_md5);
                 rowSync = (LinearLayout) vi.findViewById(R.id.row_sync);
@@ -386,7 +385,7 @@ public class ContentActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(String... params) {
                 int count;
-                Calendar before, afterDownload;
+                Calendar before, afterDownload, beforeDownload;
                 if (util.isInternetConnected(ContentActivity.this)) {
                     try {
                         before = Calendar.getInstance();
@@ -417,7 +416,7 @@ public class ContentActivity extends AppCompatActivity {
                         OutputStream output = new FileOutputStream(outputFile);
                         byte data[] = new byte[1024];
                         long total = 0;
-
+                        beforeDownload = Calendar.getInstance();
                         while ((count = input.read(data)) != -1) {
                             total += count;
                             publishProgress(new String[]{"" + (int) ((total * 100) / lenghtOfFile), count + "", total + "", lenghtOfFile + ""});
@@ -427,6 +426,7 @@ public class ContentActivity extends AppCompatActivity {
                         afterDownload = (lenghtOfFile > 0) ? Calendar.getInstance() : null;
                         if (afterDownload != null) {
                             timeForDownload = afterTtfb.getTimeInMillis() - before.getTimeInMillis();
+                            throughput = lenghtOfFile / (afterDownload.getTimeInMillis() -beforeDownload.getTimeInMillis());
 
                         }
                         output.flush();
@@ -466,6 +466,7 @@ public class ContentActivity extends AppCompatActivity {
                 if (b) {
                     vh.tvTimer.setText(timeForDownload + " s");
                     vh.tvMD5.setText(util.generateMD5(outputFile));
+                    vh.tvThroughput.setText(throughput +"Kb/s");
                     if (!appData.getApplicationType().equalsIgnoreCase("demo")) {
                         Intent i = new Intent(ContentActivity.this, ContentDetailsActivity.class);
                         startActivity(i);

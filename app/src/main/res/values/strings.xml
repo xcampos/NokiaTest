@@ -14,6 +14,7 @@
     <string name="txt_file_name">"File: %s"</string>
     <string name="txt_progress">"Progress: %s"</string>
     <string name="txt_time">Time:</string>
+    <string name="txt_throughput">Throughput:</string>
     <string name="txt_ttfb">TTFB:</string>
     <string name="txt_md5">MD5:</string>
 
